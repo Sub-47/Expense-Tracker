@@ -1,2 +1,9 @@
 frontend/my-react-app/.env
+llm_text_transcripts/
+node_modules/
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+merge-repo.js
    

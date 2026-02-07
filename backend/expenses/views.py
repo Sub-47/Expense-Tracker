@@ -121,6 +121,7 @@ def list_expenses(request):
         {
             'id': e.id,
             'category': e.category.name,
+            'category_id': e.category.id,
             'amount': e.amount,
             'description': e.description,
             'date': e.date

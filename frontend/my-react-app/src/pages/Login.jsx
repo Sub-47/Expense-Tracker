@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import API_BASE from "../config/api";
-import ErrorMessage from '../components/ErrorMessage.jsx';
+
+// Add this helper function
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    document.cookie.split(';').forEach(cookie => {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+      }
+    });
+  }
+  return cookieValue;
+}
 
 function LoginPage() {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -13,9 +26,14 @@ function LoginPage() {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
+        const csrftoken = getCookie('csrftoken'); // Get CSRF token
+        
         const response = await fetch(`${API_BASE}/login/`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken  // Add CSRF token header
+          },
           body: JSON.stringify(formData),
           credentials: "include"
         });
@@ -28,7 +46,7 @@ function LoginPage() {
         if (!data.success) throw new Error(data.error || 'Login failed');
 
         console.log('Login successful! Check the console above.');
-        alert('Login successful! click OK to continue');
+        alert('Login successful! Check console then click OK to continue');
         window.location.href = '/categories';
       } catch (err) {
         console.error('Login error:', err);

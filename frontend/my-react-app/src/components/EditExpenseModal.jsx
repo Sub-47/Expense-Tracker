@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import API_BASE from '../config/api';
 
+
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -16,7 +17,7 @@ function getCookie(name) {
 
 function EditExpenseModal({ expense, categories, onClose, onUpdate }) {
   const [form, setForm] = useState({
-    category: expense.category_id || '',
+    category: expense?.category_id || '',
     amount: expense.amount || '',
     description: expense.description || ''
   });

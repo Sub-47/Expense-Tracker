@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import API_BASE from '../config/api';
 
+// Helper to get CSRF token from cookies
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -14,20 +15,26 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function EditExpenseModal({ expense, categories, onClose, onUpdate }) {
-  const [form, setForm] = useState({
-    category: expense.category_id || '',
-    amount: expense.amount || '',
-    description: expense.description || ''
-  });
+function AddExpenseForm({ onExpenseAdded }) {
+  const [categories, setCategories] = useState([]);
+  const [form, setForm] = useState({ category: '', amount: '', description: '' });
   const [message, setMessage] = useState('');
+
+  // Fetch categories from backend
+  useEffect(() => {
+    fetch(`${API_BASE}/categories/`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setCategories(data))
+      .catch(err => console.error('Failed to fetch categories:', err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const csrftoken = getCookie('csrftoken');
-      const res = await fetch(`${API_BASE}/expenses/${expense.id}/update/`, {
-        method: 'PUT',
+      
+      const res = await fetch(`${API_BASE}/expenses/add/`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrftoken
@@ -38,76 +45,53 @@ function EditExpenseModal({ expense, categories, onClose, onUpdate }) {
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to update expense');
+        throw new Error(errorData.error || 'Failed to add expense');
       }
 
-      setMessage('Expense updated!');
-      setTimeout(() => {
-        onUpdate();
-        onClose();
-      }, 1000);
+      await res.json();
+      
+      setMessage('Expense added!');
+      setForm({ category: '', amount: '', description: '' });
+
+      if (onExpenseAdded) onExpenseAdded();
     } catch (err) {
       setMessage(err.message);
     }
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        minWidth: '300px'
-      }}>
-        <h2>Edit Expense</h2>
-        <form onSubmit={handleSubmit}>
-          <select
-            value={form.category}
-            onChange={e => setForm({ ...form, category: e.target.value })}
-            required
-            style={{ width: '100%', marginBottom: '10px', padding: '5px' }}
-          >
-            <option value="">Select Category</option>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+    <form onSubmit={handleSubmit}>
+      <h2>Add Expense</h2>
 
-          <input
-            type="number"
-            placeholder="Amount"
-            value={form.amount}
-            onChange={e => setForm({ ...form, amount: e.target.value })}
-            required
-            style={{ width: '100%', marginBottom: '10px', padding: '5px' }}
-          />
+      <select
+        value={form.category}
+        onChange={e => setForm({ ...form, category: e.target.value })}
+        required
+      >
+        <option value="">Select Category</option>
+        {categories.map(c => (
+          <option key={c.id} value={c.id}>{c.name}</option>
+        ))}
+      </select>
 
-          <input
-            placeholder="Description"
-            value={form.description}
-            onChange={e => setForm({ ...form, description: e.target.value })}
-            style={{ width: '100%', marginBottom: '10px', padding: '5px' }}
-          />
+      <input
+        type="number"
+        placeholder="Amount"
+        value={form.amount}
+        onChange={e => setForm({ ...form, amount: e.target.value })}
+        required
+      />
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button type="submit">Update</button>
-            <button type="button" onClick={onClose}>Cancel</button>
-          </div>
-          {message && <p>{message}</p>}
-        </form>
-      </div>
-    </div>
+      <input
+        placeholder="Description"
+        value={form.description}
+        onChange={e => setForm({ ...form, description: e.target.value })}
+      />
+
+      <button type="submit">Add Expense</button>
+      {message && <p>{message}</p>}
+    </form>
   );
 }
 
-export default EditExpenseModal;
+export default AddExpenseForm;

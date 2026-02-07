@@ -144,3 +144,42 @@ def list_tasks(request):
         'success': True,
         'tasks': []
     })
+
+
+@api_view(['PUT'])
+def update_expense(request, expense_id):
+    if not request.user.is_authenticated:
+        return Response({'success': False, 'error': 'Not authenticated'}, status=401)
+    
+    try:
+        expense = Expense.objects.get(id=expense_id, user=request.user)
+        
+        # Update fields
+        category_id = request.data.get('category')
+        if category_id:
+            try:
+                category = Category.objects.get(id=category_id)
+                expense.category = category
+            except Category.DoesNotExist:
+                return Response({'success': False, 'error': 'Category not found'}, status=404)
+        
+        if 'amount' in request.data:
+            expense.amount = request.data.get('amount')
+        
+        if 'description' in request.data:
+            expense.description = request.data.get('description')
+        
+        expense.save()
+        
+        return Response({
+            'success': True,
+            'expense': {
+                'id': expense.id,
+                'category': expense.category.name,
+                'amount': expense.amount,
+                'description': expense.description,
+                'date': expense.date
+            }
+        })
+    except Expense.DoesNotExist:
+        return Response({'success': False, 'error': 'Expense not found'}, status=404)

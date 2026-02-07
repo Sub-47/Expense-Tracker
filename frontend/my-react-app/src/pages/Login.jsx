@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import API_BASE from "../config/api";
+import ErrorMessage from '../components/ErrorMessage.jsx';
 
 function LoginPage() {
     const [formData, setFormData] = useState({ username: '', password: '' });

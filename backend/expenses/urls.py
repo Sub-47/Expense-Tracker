@@ -7,6 +7,7 @@ from .views import (
     list_expenses,
     add_expense,
     delete_expense,
+    update_expense,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('expenses/', list_expenses),      
     path('expenses/add/', add_expense),    
     path('expenses/<int:expense_id>/delete/', delete_expense),
+    path('expenses/<int:expense_id>/update/', update_expense),
 ]

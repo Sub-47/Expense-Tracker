@@ -1,0 +1,167 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #ffeef8 0%, #fff5f7 100);
+  min-height: 100vh;
+  color: #4a4a4a;
+  padding: 20px;
+}
+
+#root {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #d6336c;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+h2 {
+  color: #e91e63;
+  font-size: 1.5rem;
+  margin: 20px 0 15px 0;
+}
+
+/* Navigation */
+nav {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.1);
+  margin-bottom: 30px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+nav a {
+  color: #e91e63;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+nav a:hover {
+  background: #ffe0ed;
+  color: #c2185b;
+}
+
+/* Forms */
+form {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.08);
+  margin-bottom: 25px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 8px 0;
+  border: 2px solid #ffc1d9;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+  background: #fffafc;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #e91e63;
+  background: white;
+}
+
+/* Buttons */
+button {
+  background: #e91e63;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin: 5px;
+}
+
+button:hover {
+  background: #c2185b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 30, 99, 0.3);
+}
+
+button[type="button"] {
+  background: #f8bbd0;
+  color: #880e4f;
+}
+
+button[type="button"]:hover {
+  background: #f48fb1;
+}
+
+/* Expense List */
+ul {
+  list-style: none;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.08);
+}
+
+li {
+  padding: 15px;
+  margin: 10px 0;
+  background: #fffafc;
+  border-left: 4px solid #e91e63;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+li:hover {
+  background: #fff0f5;
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.15);
+}
+
+li strong {
+  color: #e91e63;
+  font-weight: 600;
+}
+
+/* Total Display */
+h2[style*="Total"] {
+  background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+  text-align: center;
+}
+
+/* Messages */
+p {
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin: 10px 0;
+}
+
+form p {
+  background: #e1f5e1;
+  color: #2e7d32;
+  border-left: 4px solid #4caf50;
+}

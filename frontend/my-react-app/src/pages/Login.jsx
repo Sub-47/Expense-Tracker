@@ -1,68 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import API_BASE from "../config/api";
 
-// Add this helper function
 function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    document.cookie.split(';').forEach(cookie => {
-      cookie = cookie.trim();
-      if (cookie.startsWith(name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-      }
-    });
-  }
-  return cookieValue;
+  let value = null;
+  document.cookie?.split(";").forEach(cookie => {
+    const trimmed = cookie.trim();
+    if (trimmed.startsWith(name + "=")) {
+      value = decodeURIComponent(trimmed.slice(name.length + 1));
+    }
+  });
+  return value;
 }
 
-function LoginPage() {
-    const [formData, setFormData] = useState({ username: '', password: '' });
-    const [error, setError] = useState('');
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const username = localStorage.getItem("username");
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const csrftoken = getCookie('csrftoken'); // Get CSRF token
-        
-        const response = await fetch(`${API_BASE}/login/`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken  // Add CSRF token header
-          },
-          body: JSON.stringify(formData),
-          credentials: "include"
-        });
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-        console.log('Login response status:', response.status);
-        const data = await response.json();
-        console.log('Login response data:', data);
-        console.log('Cookies after login:', document.cookie);
-        
-        if (!data.success) throw new Error(data.error || 'Login failed');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-        console.log('Login successful! Check the console above.');
-        alert('Login successful! Check console then click OK to continue');
-        window.location.href = '/categories';
-      } catch (err) {
-        console.error('Login error:', err);
-        setError(err.message);
-      }
-    };
+    try {
+      const response = await fetch(`${API_BASE}/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        credentials: "include",
+        body: JSON.stringify(formData)
+      });
 
-    return (
+      const data = await response.json();
+
+      if (!data.success) throw new Error(data.error || "Login failed");
+
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("username", formData.username);
+
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <nav style={{ marginBottom: "20px" }}>
+        {username && <span>Welcome, {username}!</span>}
+        <Link to="/categories" style={{ marginRight: "10px" }}>Categories</Link>
+        <Link to="/add-expense" style={{ marginRight: "10px" }}>Add Expense</Link>
+        {username && (
+          <button
+            onClick={() => {
+              localStorage.clear();
+              navigate("/login");
+            }}
+          >
+            Logout
+          </button>
+        )}
+      </nav>
+
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
         <input name="username" placeholder="Username" onChange={handleChange} required />
         <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-        <button type="submit">Login</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
-    );
+    </>
+  );
 }
-
-export default LoginPage;

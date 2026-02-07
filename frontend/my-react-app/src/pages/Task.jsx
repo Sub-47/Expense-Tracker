@@ -4,6 +4,7 @@ import AddExpenseForm from './Expense.jsx';
 import EditExpenseModal from '../components/EditExpenseModal.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import { formatDate, getRelativeTime } from '../utils/DateFormatter';
 
 function getCookie(name) {
     let cookieValue = null;
@@ -103,7 +104,8 @@ function getCookie(name) {
                     <li key={e.id}>
                     <strong>{e.category}</strong> - ${parseFloat(e.amount).toFixed(2)} -
                       {e.description || '-'} -
-                      {new Date(e.date).toLocaleDateString()}
+
+                      {formatDate(e.date)} ({getRelativeTime(e.date)})
                       <button onClick={() => setEditingExpense(e)} style={{ marginLeft: '10px' }}>
                         Edit
                       </button>
